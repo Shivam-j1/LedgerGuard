@@ -41,19 +41,18 @@ class LedgerServiceTest {
     @BeforeEach
     void setUp() {
         service = new LedgerService(accounts, entries, idempotency, new ObjectMapper());
-        when(entries.save(any(LedgerEntry.class))).thenAnswer(call -> call.getArgument(0));
-        when(entries.saveAndFlush(any(LedgerEntry.class))).thenAnswer(call -> call.getArgument(0));
     }
 
     @Test
     void transferDebitsAndCreditsAsOneOperationAndWritesPairedEntries() {
+        when(entries.save(any(LedgerEntry.class))).thenAnswer(call -> call.getArgument(0));
         Account source = account(10L, "1000.00");
         Account destination = account(20L, "50.00");
         when(accounts.findByIdForUpdate(10L)).thenReturn(Optional.of(source));
         when(accounts.findByIdForUpdate(20L)).thenReturn(Optional.of(destination));
         when(idempotency.saveAndFlush(any(IdempotencyRecord.class))).thenAnswer(call -> call.getArgument(0));
 
-        TransferResponse response = service.transfer(new TransferRequest(20L, 10L,
+        TransferResponse response = service.transfer(new TransferRequest(10L, 20L,
                 new BigDecimal("125.50"), "test transfer"), "transfer-001");
 
         assertEquals(new BigDecimal("874.50"), source.getBalance());
@@ -112,6 +111,7 @@ class LedgerServiceTest {
 
     @Test
     void completedDepositWithSameKeyAndBodyReturnsStoredResponse() {
+        when(entries.saveAndFlush(any(LedgerEntry.class))).thenAnswer(call -> call.getArgument(0));
         Account account = account(1L, "0.00");
         when(accounts.findByIdForUpdate(1L)).thenReturn(Optional.of(account));
         Map<String, IdempotencyRecord> saved = new java.util.HashMap<>();
