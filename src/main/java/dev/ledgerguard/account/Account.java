@@ -9,6 +9,8 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.Instant;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "accounts")
@@ -21,6 +23,7 @@ public class Account {
     private String ownerName;
 
     @Column(nullable = false, length = 3)
+    @JdbcTypeCode(SqlTypes.CHAR)
     private String currency;
 
     @Column(nullable = false, precision = 19, scale = 2)

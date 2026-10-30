@@ -22,6 +22,7 @@ public class IdempotencyRecord {
     private String key;
 
     @Column(name = "request_hash", nullable = false, length = 64)
+    @JdbcTypeCode(SqlTypes.CHAR)
     private String requestHash;
 
     @Column(name = "response_json", nullable = false, columnDefinition = "longtext")
